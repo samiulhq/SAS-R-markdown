@@ -1,6 +1,6 @@
 # sasr Example
 
-A sample R notebook, showing how to execute base SAS code from R interface <be>
+Sample R notebook and script, showing how to execute base SAS code from R interface <be>
 
 ## System Requirement:
 - Required R package: [sasr](https://github.com/insightsengineering/sasr) <be>
