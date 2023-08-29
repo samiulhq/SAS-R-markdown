@@ -1,12 +1,14 @@
 ---
 title: "SASR Notebook"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook that shows how R and SAS code can coexist and run within same source file. 
 
 
-First, we load the [sasr](https://github.com/insightsengineering/sasr) library, this library leverages the [saspy](https://github.com/sassoftware/saspy) package which is maintained by sas.
+First, we load the [sasr](https://github.com/insightsengineering/sasr) library.sasr library leverages the [saspy](https://github.com/sassoftware/saspy) package which is maintained by sas.
 
 ```{r}
 library(sasr)
@@ -14,12 +16,12 @@ library(sasr)
 
 Get a sas session. This function returns the last session created or creates a new sas session if there are no previous session
 ```{r}
-sas_session <- get_sas_session()
+my_sas_session <- get_sas_session()
 ```
 
 
 
-Let's run a sas proc. Submitting  code to sas compute
+Let's run a sas proc. Submitting  code to SAS compute
 
 
 ```{r}
@@ -34,13 +36,13 @@ result <- run_sas("
 Result contains LOG and LST.
 Print Log:
 ```{r}
-print(head(result$LOG))
+cat(result$LOG)
 
 ```
 
 Print Result:
 ```{r}
-print(head(result$LST))
+cat(result$LST)
 ```
 
 Can we copy sas dataset to R? for this let us produce a output table in SAS WORK library
@@ -55,17 +57,14 @@ result <- run_sas("
 
 Copy the data 
 ```{r}
-result <- run_sas("
-   proc freq data = sashelp.heart;
-   tables _CHARACTER_ / out=FreqCount;
-   run;
- ")
+df<- my_sas_session$sd2df("FreqCount",libref="WORK")
+print(df)
 ```
 Move some data from R to sas we will move mtcars dataframe available in R to SAS WORK library
 
 
 ```{r}
-upload <- sas_session$df2sd(mtcars,table ='mt_df',libref='WORK')
+upload <- my_sas_session$df2sd(mtcars,table ='mt_df',libref='WORK')
 ```
 
 
@@ -80,9 +79,15 @@ result <- run_sas("
 
 ```
 
-we can check if the table was created in SAS session
+We can check if the tables were created in SAS session
 
 ```{r}
-sas_session$datasets(libref="WORK")
+my_sas_session$datasets(libref="WORK")
 ```
 
+Finally, we end the SAS Session
+
+```{r}
+my_sas_session$endsas()
+rm(my_sas_session)
+```
